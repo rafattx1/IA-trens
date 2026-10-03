@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trilhos SP — O Guia Mais Humano do Metrô e Trem de São Paulo</title>
+  <meta name="description" content="Um guia acolhedor, simples e humano para você nunca mais se perder nas estações de trem e metrô de São Paulo. Dicas reais, simulador de rotas e ajuda imediata.">
+  <meta name="theme-color" content="#0d1117">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Trilhos SP — Guia Humano das Estações de Trem e Metrô">
+  <meta property="og:description" content="Perdido em São Paulo? Calma, a gente pega na sua mão. Rotas fáceis, dicas de quem pega todo dia e ajuda em tempo real.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/luz_station.jpg">
+
+  <!-- Google Fonts: Inter & Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ================================================================= -->
+  <!-- 1. PRELOADER COMBINADO: Skiper 8 (Words) + Skiper 11 (Pixel Grid)  -->
+  <!-- ================================================================= -->
+  <div id="preloader" class="preloader" aria-live="polite">
+    <div class="pixel-canvas-wrap">
+      <canvas id="pixelCanvas"></canvas>
+    </div>
+    <div class="preloader-content">
+      <div class="preloader-badge">
+        <span class="pulse-dot"></span>
+        <span class="badge-text">Metrô & Trem • São Paulo</span>
+      </div>
+      
+      <!-- Skiper 8: Animated Words Preloader -->
+      <div class="preloader-words-box" id="preloaderWordsBox">
+        <span class="preloader-word active">Chegando em São Paulo?</span>
+        <span class="preloader-word">13 linhas de trilhos...</span>
+        <span class="preloader-word">Parece um labirinto, né?</span>
+        <span class="preloader-word">Respira fundo. Não precisa correr.</span>
+        <span class="preloader-word">A gente te leva pela mão.</span>
+        <span class="preloader-word highlight">Bem-vindo ao Trilhos SP.</span>
+      </div>
+
+      <div class="preloader-progress-track">
+        <div class="preloader-progress-bar" id="preloaderProgressBar"></div>
+      </div>
+
+      <div class="preloader-footer">
+        <span class="preloader-subtext">Carregando o guia mais acolhedor da cidade...</span>
+        <button id="skipPreloaderBtn" class="skip-btn" type="button" aria-label="Pular introdução">
+          Pular introdução <span class="arrow">→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cursor Image Trail Layer (Skiper 18) -->
+  <div id="cursorTrailContainer" class="cursor-trail-layer" aria-hidden="true"></div>
+
+  <!-- ================================================================= -->
+  <!-- 2. NAVEGAÇÃO SUPERIOR FIXA (GLASSMORPHISM)                       -->
+  <!-- ================================================================= -->
+  <header class="main-header" id="mainHeader">
+    <div class="header-container">
+      <a href="#hero" class="brand-logo" aria-label="Trilhos SP - Início">
+        <div class="logo-icon-wrap">
+          <svg class="train-heart-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 15.5C4 17.433 5.567 19 7.5 19L6 21H8L9.5 19H14.5L16 21H18L16.5 19C18.433 19 20 17.433 20 15.5V6C20 4.067 18.433 2.5 16.5 2.5H7.5C5.567 2.5 4 4.067 4 6V15.5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M7 6.5H17M7 10.5H17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="8" cy="15" r="1.2" fill="currentColor"/>
+            <circle cx="16" cy="15" r="1.2" fill="currentColor"/>
+            <path d="M12 9C12 9 10.5 7.5 9.5 8.5C8.5 9.5 10 11 12 12.5C14 11 15.5 9.5 14.5 8.5C13.5 7.5 12 9 12 9Z" fill="#ff4d4d"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">Trilhos<span class="brand-accent">SP</span></span>
+          <span class="brand-tagline">Guia Humano da Cidade</span>
+        </div>
+      </a>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="#sos-section" class="nav-item">Perdido Agora?</a>
+        <a href="#simulador" class="nav-item">Simular Rota</a>
+        <a href="#hubs" class="nav-item">Grandes Estações</a>
+        <a href="#linhas" class="nav-item">As Linhas</a>
+        <a href="#dicas" class="nav-item">Dicas de Ouro</a>
+        <a href="#vozes" class="nav-item">Gente dos Trilhos</a>
+        <button type="button" class="nav-item nav-ai-trigger" id="navAiBtn">
+          <span class="ai-spark">✨</span> Falar com a Malu (IA)
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <!-- Chime button -->
+        <button id="chimeSoundBtn" class="sound-chime-btn" type="button" title="Ouvir o anúncio amigável da estação" aria-label="Tocar aviso sonoro de estação">
+          <svg class="bell-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span class="sound-text">Plim-Plim Metrô</span>
+        </button>
+
+        <!-- Call Malu Voice Button -->
+        <button id="headerCallBtn" class="sound-chime-btn call-mode-btn" type="button" title="Ligar para a Malu (Chamada de Voz)" aria-label="Iniciar chamada de voz com Malu">
+          <span class="call-pulse-dot"></span>
+          <span class="sound-text">📞 Ligar pra Malu</span>
+        </button>
+
+        <!-- SOS Quick Button -->
+        <a href="#sos-section" class="sos-pill-btn" id="headerSosBtn">
+          <span class="sos-beacon"></span>
+          <span class="sos-label">Tô Perdido!</span>
+        </a>
+
+        <!-- Mobile menu toggle -->
+        <button id="mobileMenuBtn" class="mobile-menu-btn" type="button" aria-label="Abrir menu de navegação">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer -->
+  <div class="mobile-drawer" id="mobileDrawer">
+    <div class="drawer-header">
+      <span class="drawer-title">Menu Trilhos SP</span>
+      <button id="closeDrawerBtn" class="close-drawer-btn" type="button">&times;</button>
+    </div>
+    <div class="drawer-links">
+      <a href="#sos-section" class="drawer-link">🚨 Tô Perdido Agora! (SOS)</a>
+      <a href="#simulador" class="drawer-link">🧭 Simulador de Trajeto</a>
+      <a href="#hubs" class="drawer-link">🏛️ Grandes Terminais (Sé, Luz...)</a>
+      <a href="#linhas" class="drawer-link">🌈 Cores & Linhas de SP</a>
+      <a href="#dicas" class="drawer-link">💡 Dicas de Sobrevivência</a>
+      <a href="#vozes" class="drawer-link">👥 Vozes dos Trilhos</a>
+      <a href="#dicionario" class="drawer-link">📖 Dicionário Paulistano</a>
+      <button type="button" class="drawer-link drawer-ai-btn" id="drawerAiBtn">🤖 Falar com a Malu (IA)</button>
+    </div>
+    <div class="drawer-footer">
+      <p>Precisa de socorro imediato?</p>
+      <a href="tel:08007707722" class="drawer-phone">Ligue Metrô: 0800 770 7722</a>
+    </div>
+  </div>
+
+  <main>
+    <!-- ================================================================= -->
+    <!-- 3. HERO SECTION COM SKIPE 70 (Text Reveal Box) & Trail Trigger    -->
+    <!-- ================================================================= -->
+    <section class="hero-section" id="hero" data-trail="true">
+      <div class="hero-bg-overlay"></div>
+      <div class="hero-content container">
+        
+        <!-- Skiper 70: Text Reveal Box Container -->
+        <div class="skiper70-box reveal-trigger" id="heroRevealBox">
+          <div class="skiper70-glow-border"></div>
+          <div class="skiper70-inner">
+            
+            <div class="hero-badge">
+              <span class="badge-icon">❤️</span>
+              <span class="badge-label">Feito de paulistano para quem acabou de chegar</span>
+              <span class="badge-tag">Versão 2026</span>
+            </div>
+
+            <h1 class="hero-title">
+              Perdido no Metrô de São Paulo?
+              <span class="hero-title-highlight">Calma, a gente pega na sua mão.</span>
+            </h1>
+
+            <p class="hero-description">
+              São Paulo tem mais de <strong>100 estações</strong> e <strong>370 km de trilhos</strong>. A correria das pessoas assusta no primeiro dia, mas o sistema é um dos mais limpos, pontuais e bem sinalizados do mundo.
+              Aqui você descobre os <em>segredos que ninguém te conta</em> — de graça, passo a passo e sem vergonha de perguntar.
+            </p>
+
+            <div class="hero-cta-grid">
+              <a href="#sos-section" class="btn btn-primary" id="heroSosCta">
+                <span class="btn-icon">🚨</span>
+                <span class="btn-text">
+                  <strong>Tô na estação agora!</strong>
+                  <small>Ajuda rápida e descomplicada</small>
+                </span>
+              </a>
+
+              <button type="button" class="btn btn-ai-hero" id="heroAiBtn">
+                <span class="btn-icon">🤖</span>
+                <span class="btn-text">
+                  <strong>Falar com a Malu (IA)</strong>
+                  <small>Tire dúvidas no chat ao vivo</small>
+                </span>
+              </button>
+
+              <a href="#simulador" class="btn btn-secondary" id="heroSimuladorCta">
+                <span class="btn-icon">🧭</span>
+                <span class="btn-text">
+                  <strong>Simular Meu Trajeto</strong>
+                  <small>Veja linha, sentido e escadas</small>
+                </span>
+              </a>
+
+              <a href="#dicas" class="btn btn-tertiary">
+                <span class="btn-icon">💡</span>
+                <span class="btn-text">
+                  <strong>Dicas de Sobrevivência</strong>
+                  <small>Como pagar, escada rolante e mais</small>
+                </span>
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Live Status Ticker (Human & Reassuring) -->
+        <div class="live-status-card">
+          <div class="status-indicator">
+            <span class="status-ping"></span>
+            <span class="status-label">Clima nas Estações Hoje:</span>
+          </div>
+          <div class="status-marquee-wrap">
+            <div class="status-marquee" id="statusMarquee">
+              <span class="status-item"><strong style="color:#005ca9">Linha 1-Azul:</strong> Fluxo tranquilo • Ótimo para visitar Liberdade e Tietê</span>
+              <span class="status-divider">•</span>
+              <span class="status-item"><strong style="color:#00823b">Linha 2-Verde:</strong> Paulista fluindo suave • Ar condicionado ligado</span>
+              <span class="status-divider">•</span>
+              <span class="status-item"><strong style="color:#ee3124">Linha 3-Vermelha:</strong> Movimentada na Sé • Deixe quem está saindo desembarcar primeiro</span>
+              <span class="status-divider">•</span>
+              <span class="status-item"><strong style="color:#f5a623">Linha 4-Amarela:</strong> Operação plena • Sem condutor, plataformas com portas automáticas</span>
+              <span class="status-divider">•</span>
+              <span class="status-item"><strong style="color:#ca1788">Linha 7 & 11 CPTM:</strong> Estação da Luz com agentes prontos no saguão principal</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Hero Visual Mosaic Strip -->
+      <div class="hero-strip-banner container">
+        <div class="hero-strip-card" style="background-image: url('assets/images/luz_station.jpg')">
+          <div class="strip-badge">Estação da Luz</div>
+          <div class="strip-quote">"O castelo vitoriano que conecta a cidade inteira"</div>
+        </div>
+        <div class="hero-strip-card" style="background-image: url('assets/images/se_station.jpg')">
+          <div class="strip-badge">Estação Sé</div>
+          <div class="strip-quote">"600 mil passos por dia com o coração aberto"</div>
+        </div>
+        <div class="hero-strip-card" style="background-image: url('assets/images/agente_ajuda.jpg')">
+          <div class="strip-badge">Gente Que Ajuda</div>
+          <div class="strip-quote">"Nunca hesite em procurar o colete da estação"</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 4. SEÇÃO SOS: "TÔ PERDIDO AGORA!" (Ajuda Imediata Empática)      -->
+    <!-- ================================================================= -->
+    <section class="section-container sos-section" id="sos-section">
+      <div class="container">
+        
+        <div class="section-heading text-center">
+          <div class="subheading-tag alert-tag">🚨 Socorro Imediato</div>
+          <h2 class="section-title">Bateu o desespero? Respira fundo.</h2>
+          <p class="section-subtitle">
+            Em primeiro lugar: <strong>ninguém vai te julgar</strong>. Mais de 4 milhões de pessoas passam pelas catracas diariamente e quase todo mundo já pegou o sentido errado pelo menos uma vez.
+          </p>
+        </div>
+
+        <div class="sos-interactive-card">
+          <div class="sos-prompt-bar">
+            <label for="sosStationSelect" class="sos-label-text">
+              <span class="pin-icon">📍</span> Onde você está ou qual o nome na placa mais próxima?
+            </label>
+            <div class="sos-input-group">
+              <select id="sosStationSelect" class="sos-select" aria-label="Selecione onde você está">
+                <option value="">Selecione a estação onde você está...</option>
+                <option value="se">Estação Sé (Linha 1-Azul & Linha 3-Vermelha)</option>
+                <option value="luz">Estação da Luz (Linhas 1-Azul, 4-Amarela, 7-Rubi, 11-Coral)</option>
+                <option value="bras">Estação Brás (Linha 3-Vermelha e 5 Linhas de Trem)</option>
+                <option value="pinheiros">Estação Pinheiros (Linha 4-Amarela & Linha 9-Esmeralda)</option>
+                <option value="barra_funda">Palmeiras-Barra Funda (Linha 3-Vermelha & Trens 7 e 8)</option>
+                <option value="tiete">Portuguesa-Tietê (Rodoviária / Linha 1-Azul)</option>
+                <option value="paulista">Consolação / Paulista (Linhas 2-Verde e 4-Amarela)</option>
+                <option value="republica">República (Linhas 3-Vermelha e 4-Amarela)</option>
+                <option value="paraiso">Paraíso (Linhas 1-Azul e 2-Verde)</option>
+                <option value="outra">Outra estação qualquer</option>
+              </select>
+              <button id="sosActionBtn" class="btn btn-sos-action" type="button">
+                Me Salva! ➔
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic SOS Result Container -->
+          <div id="sosResultPanel" class="sos-result-panel" style="display:none;">
+            <!-- Populated via JavaScript -->
+          </div>
+
+          <!-- 4 Immediate Truths Box -->
+          <div class="sos-truths-grid">
+            <div class="truth-card">
+              <div class="truth-icon">🆓</div>
+              <div class="truth-body">
+                <h3>Baldeação não paga de novo!</h3>
+                <p>Você pode trocar de linha quantas vezes quiser dentro das estações sem passar pela catraca de saída. A passagem é única (R$ 5,00).</p>
+              </div>
+            </div>
+
+            <div class="truth-card">
+              <div class="truth-icon">👀</div>
+              <div class="truth-body">
+                <h3>Olhe para o teto e siga a cor</h3>
+                <p>As placas suspensas mostram o <strong>nome da última estação da linha</strong> (é o "sentido"). Se o seu destino estiver no meio do caminho, é só seguir essa placa!</p>
+              </div>
+            </div>
+
+            <div class="truth-card">
+              <div class="truth-icon">🤝</div>
+              <div class="truth-body">
+                <h3>Procure o colete de apoio</h3>
+                <p>Em todas as plataformas e catracas há agentes com colete amarelo ou uniforme. Pode chegar e falar: <em>"Moço(a), estou perdido, quero ir para tal lugar."</em> Eles ajudam com paciência!</p>
+              </div>
+            </div>
+
+            <div class="truth-card">
+              <div class="truth-icon">⏰</div>
+              <div class="truth-body">
+                <h3>Não precisa correr pro trem</h3>
+                <p>O trem apitou para fechar a porta? Não se arrisque! Em São Paulo, no horário de pico, o próximo trem chega em <strong>90 a 120 segundos</strong>.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 5. SIMULADOR DE ROTAS HUMANO ("DESCOMPLICADOR")                    -->
+    <!-- ================================================================= -->
+    <section class="section-container simulador-section" id="simulador">
+      <div class="container">
+        
+        <div class="section-heading text-center">
+          <div class="subheading-tag">🧭 Bússola Amiga</div>
+          <h2 class="section-title">Para onde você quer ir hoje?</h2>
+          <p class="section-subtitle">
+            Nada de jargões técnicos frios. A gente te explica como se fosse um amigo paulistano te mandando áudio no WhatsApp!
+          </p>
+        </div>
+
+        <!-- Quick Presets -->
+        <div class="presets-container">
+          <span class="preset-label">Destinos mais comuns de quem chega:</span>
+          <div class="presets-buttons-wrap">
+            <button class="preset-btn" data-origin="tiete" data-dest="paulista">
+              🚌 Rodoviária Tietê ➔ Av. Paulista
+            </button>
+            <button class="preset-btn" data-origin="gru" data-dest="luz">
+              ✈️ Aeroporto Guarulhos ➔ Centro (Luz)
+            </button>
+            <button class="preset-btn" data-origin="luz" data-dest="março">
+              🛍️ Estação da Luz ➔ Compras 25 de Março
+            </button>
+            <button class="preset-btn" data-origin="barra_funda" data-dest="allianz">
+              ⚽ Barra Funda ➔ Allianz Parque
+            </button>
+            <button class="preset-btn" data-origin="se" data-dest="liberdade">
+              🏮 Sé ➔ Bairro da Liberdade
+            </button>
+            <button class="preset-btn" data-origin="pinheiros" data-dest="beco">
+              🎨 Pinheiros ➔ Beco do Batman / Vila Madalena
+            </button>
+          </div>
+        </div>
+
+        <!-- Simulator Form -->
+        <div class="simulador-card">
+          <div class="simulador-grid">
+            
+            <div class="route-input-col">
+              <label for="routeOrigin" class="input-label">
+                <span class="label-bullet origin-bullet"></span> De onde você está saindo?
+              </label>
+              <div class="select-wrapper">
+                <select id="routeOrigin" class="route-select">
+                  <option value="">Selecione seu ponto de partida...</option>
+                  <optgroup label="Terminais & Chegadas">
+                    <option value="tiete">Portuguesa-Tietê (Rodoviária Tietê)</option>
+                    <option value="barra_funda">Palmeiras-Barra Funda (Rodoviária Oeste)</option>
+                    <option value="jabaquara">Jabaquara (Rodoviária Litoral/Santos)</option>
+                    <option value="gru">Aeroporto de Guarulhos (Estação CPTM L13)</option>
+                  </optgroup>
+                  <optgroup label="Estações Centrais & Conexões">
+                    <option value="se">Sé (Coração de SP / L1 e L3)</option>
+                    <option value="luz">Luz (Centro Histórico / L1, L4, L7, L11)</option>
+                    <option value="bras">Brás (Centro Comercial & CPTM)</option>
+                    <option value="republica">República (L3 e L4)</option>
+                    <option value="pinheiros">Pinheiros (L4 e L9)</option>
+                    <option value="paulista">Paulista / Consolação (L2 e L4)</option>
+                    <option value="paraiso">Paraíso (L1 e L2)</option>
+                    <option value="ana_rosa">Ana Rosa (L1 e L2)</option>
+                    <option value="santo_amaro">Santo Amaro (L5 e L9)</option>
+                    <option value="vila_madalena">Vila Madalena (L2)</option>
+                    <option value="tatuape">Tatuapé (L3, L11, L12)</option>
+                    <option value="itaquera">Corinthians-Itaquera (L3 e L11)</option>
+                  </optgroup>
+                </select>
+              </div>
+            </div>
+
+            <div class="route-swap-col">
+              <button id="swapRouteBtn" class="swap-btn" type="button" title="Inverter origem e destino" aria-label="Inverter origem e destino">
+                ⇄
+              </button>
+            </div>
+
+            <div class="route-input-col">
+              <label for="routeDest" class="input-label">
+                <span class="label-bullet dest-bullet"></span> Para onde você quer ir?
+              </label>
+              <div class="select-wrapper">
+                <select id="routeDest" class="route-select">
+                  <option value="">Selecione seu destino...</option>
+                  <optgroup label="Avenida Paulista & Museus">
+                    <option value="paulista">Avenida Paulista / MASP (Trianon-Masp)</option>
+                    <option value="consolacao">Rua Augusta / Consolação</option>
+                    <option value="oscar_freire">Rua Oscar Freire (Jardins)</option>
+                  </optgroup>
+                  <optgroup label="Compras & Passeios Famosos">
+                    <option value="março">Rua 25 de Março / Mercadão (São Bento)</option>
+                    <option value="bras">Brás (Confecções e Feirinha da Madrugada)</option>
+                    <option value="liberdade">Bairro da Liberdade (Praça da Liberdade)</option>
+                    <option value="beco">Beco do Batman (Vila Madalena / Fradique)</option>
+                    <option value="ibirapuera">Parque Ibirapuera (Estação AACD-Servidor / Brigadeiro)</option>
+                  </optgroup>
+                  <optgroup label="Estádios & Eventos">
+                    <option value="allianz">Allianz Parque (Palmeiras-Barra Funda)</option>
+                    <option value="itaquera">Neo Química Arena (Corinthians-Itaquera)</option>
+                    <option value="morumbi">Estádio do Morumbi (São Paulo-Morumbi L4)</option>
+                    <option value="interlagos">Autódromo de Interlagos (Autódromo L9)</option>
+                  </optgroup>
+                  <optgroup label="Grandes Conexões">
+                    <option value="tiete">Rodoviária do Tietê</option>
+                    <option value="luz">Estação da Luz (Pinacoteca e Parque)</option>
+                    <option value="pinheiros">Estação Pinheiros / Berrini</option>
+                  </optgroup>
+                </select>
+              </div>
+            </div>
+
+            <div class="route-btn-col">
+              <button id="calculateRouteBtn" class="btn btn-primary btn-calc" type="button">
+                Traçar Rota Humana ➔
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Calculated Route Output -->
+          <div id="routeOutputCard" class="route-output-card" style="display:none;">
+            <!-- Rendered by JS -->
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 6. GRANDES TERMINAIS: Skiper 35 (Hover Expand)                    -->
+    <!-- ================================================================= -->
+    <section class="section-container hubs-section" id="hubs">
+      <div class="container">
+        
+        <div class="section-heading text-center">
+          <div class="subheading-tag">🏛️ O Labirinto Desvendado</div>
+          <h2 class="section-title">As estações que mais assustam (e os segredos de cada uma)</h2>
+          <p class="section-subtitle">
+            Passe o mouse por cima de cada estação para abrir o raio-x com as dicas que salvam qualquer visitante.
+          </p>
+        </div>
+
+        <!-- Skiper 35: Hover Expand Layout -->
+        <div class="skiper35-expand-container" id="skiper35Container">
+          
+          <!-- Card 1: Estação da Luz -->
+          <div class="skiper35-card active" data-hub="luz" style="background-image: linear-gradient(to top, rgba(13,17,23,0.95) 0%, rgba(13,17,23,0.3) 60%), url('assets/images/luz_station.jpg')">
+            <div class="skiper35-collapsed-bar">
+              <span class="collapsed-title">01 • Estação da Luz</span>
+              <span class="collapsed-lines">
+                <span class="badge-mini l1">L1</span>
+                <span class="badge-mini l4">L4</span>
+                <span class="badge-mini l7">L7</span>
+                <span class="badge-mini l11">L11</span>
+              </span>
+            </div>
+            <div class="skiper35-expanded-content">
+              <div class="hub-header">
+                <span class="hub-kicker">Coração Histórico & Conexões</span>
+                <h3 class="hub-title">Estação da Luz</h3>
+                <div class="hub-badges">
+                  <span class="badge-line line-azul">Linha 1-Azul</span>
+                  <span class="badge-line line-amarela">Linha 4-Amarela</span>
+                  <span class="badge-line line-rubi">Linha 7-Rubi</span>
+                  <span class="badge-line line-coral">Linha 11-Coral</span>
+                </div>
+              </div>
+              <p class="hub-desc">
+                Parece um castelo vitoriano de Londres. É imensa, tem relógio histórico e um subsolo moderno.
+              </p>
+              <div class="hub-hacks">
+                <div class="hack-item">
+                  <span class="hack-icon">🚶</span>
+                  <span><strong>O túnel da Amarela:</strong> É bem longo, mas tem esteira rolante no chão. Siga em frente sem pressa.</span>
+                </div>
+                <div class="hack-item">
+                  <span class="hack-icon">⚡</span>
+                  <span><strong>Para pegar o trem da CPTM:</strong> Fica no nível térreo sob os arcos de ferro. Olhe as placas numeradas das plataformas.</span>
+                </div>
+                <div class="hack-item">
+                  <span class="hack-icon">☕</span>
+                  <span><strong>Dica humana:</strong> Saída para a Pinacoteca e Museu da Língua Portuguesa fica dentro da própria estação.</span>
+                </div>
+                <button type="button" class="btn-hub-audio" data-hub-audio="luz">
+                  <span>🎧 Ouvir áudio-guia da Luz com Malu</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Estação Sé -->
+          <div class="skiper35-card" data-hub="se" style="background-image: linear-gradient(to top, rgba(13,17,23,0.95) 0%, rgba(13,17,23,0.3) 60%), url('assets/images/se_station.jpg')">
+            <div class="skiper35-collapsed-bar">
+              <span class="collapsed-title">02 • Estação Sé</span>
+              <span class="collapsed-lines">
+                <span class="badge-mini l1">L1</span>
+                <span class="badge-mini l3">L3</span>
+              </span>
+            </div>
+            <div class="skiper35-expanded-content">
+              <div class="hub-header">
+                <span class="hub-kicker">O Epicentro do Brasil</span>
+                <h3 class="hub-title">Estação Sé</h3>
+                <div class="hub-badges">
+                  <span class="badge-line line-azul">Linha 1-Azul</span>
+                  <span class="badge-line line-vermelha">Linha 3-Vermelha</span>
+                </div>
+              </div>
+              <p class="hub-desc">
+                Mais de 600 mil pessoas cruzam aqui todos os dias. O cruzamento das duas linhas pioneiras de São Paulo.
+              </p>
+              <div class="hub-hacks">
+                <div class="hack-item">
+                  <span class="hack-icon">🚪</span>
+                  <span><strong>O segredo das portas:</strong> Desembarque pela <em>plataforma central</em>! As plataformas laterais são para quem vai embarcar.</span>
+                </div>
+                <div class="hack-item">
+                  <span class="hack-icon">🛟</span>
+                  <span><strong>Perdeu algo?</strong> O Posto Central de Achados e Perdidos do Metrô fica aqui no mezanino.</span>
+                </div>
+                <div class="hack-item">
+                  <span class="hack-icon">💡</span>
+                  <span><strong>Dica humana:</strong> Se estiver muito cheio, encoste perto da coluna e respire. Os trens passam a cada minuto.</span>
+                </div>
+                <button type="button" class="btn-hub-audio" data-hub-audio="se">
+                  <span>🎧 Ouvir áudio-guia da Sé com Malu</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Estação Pinheiros -->
+          <div class="skiper35-card" data-hub="pinheiros" style="background-image: linear-gradient(to top, rgba(13,17,23,0.95) 0%, rgba(13,17,23,0.3) 60%), url('assets/images/pinheiros_station.jpg')">
+            <div class="skiper35-collapsed-bar">
+              <span class="collapsed-title">03 • Estação Pinheiros</span>
+              <span class="collapsed-lines">
+                <span class="badge-mini l4">L4</span>
+                <span class="badge-mini l9">L9</span>
+              </span>
+            </div>
+            <div class="skiper35-expanded-content">
+              <div class="hub-header">
+                <span class="hub-kicker">As Maiores Escadas Rolantes</span>
+                <h3 class="hub-title">Estação Pinheiros</h3>
+                <div class="hub-badges">
+                  <span class="badge-line line-amarela">Linha 4-Amarela</span>
+                  <span class="badge-line line-esmeralda">Linha 9-Esmeralda</span>
+                </div>
+              </div>
+              <p class="hub-desc">
+                Uma das estações mais profundas da América Latina. Conecta a moderna Linha Amarela ao trem que percorre o Rio Pinheiros.
+              </p>
+              <div class="hub-hacks">
+                <div class="hack-item">
+                  <span class="hack-icon">🧗</span>
+                  <span><strong>Escadas profundas:</strong> São vários lances de escadas rolantes contínuas. Segure sempre no corrimão se tiver labirintite ou vertigem.</span>
+                </div>
+                <div class="hack-item">
+                  <span class="hack-icon">🔄</span>
+                  <span><strong>Transferência:</strong> Da Linha 9 para a Linha 4 basta subir as rampas e escadas. Tudo integrado e gratuito.</span>
+                </div>
+                <div class="hack-item">
+                  <span class="hack-icon">🚴</span>
+                  <span><strong>Dica humana:</strong> Tem bicicletário e saída direta para a ciclovia do Rio Pinheiros.</span>
+                </div>
+                <button type="button" class="btn-hub-audio" data-hub-audio="pinheiros">
+                  <span>🎧 Ouvir áudio-guia de Pinheiros com Malu</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: Estação Brás -->
+          <div class="skiper35-card" data-hub="bras" style="background-image: linear-gradient(to top, rgba(13,17,23,0.95) 0%, rgba(13,17,23,0.3) 60%), url('assets/images/hero_trains.jpg')">
+            <div class="skiper35-collapsed-bar">
+              <span class="collapsed-title">04 • Estação Brás</span>
+              <span class="collapsed-lines">
+                <span class="badge-mini l3">L3</span>
+                <span class="badge-mini l7">L7</span>
+                <span class="badge-mini l10">L10</span>
+                <span class="badge-mini l11">L11</span>
+                <span class="badge-mini l12">L12</span>
+              </span>
+            </div>
+            <div class="skiper35-expanded-content">
+              <div class="hub-header">
+                <span class="hub-kicker">O Portal das Compras & Trens</span>
+                <h3 class="hub-title">Estação Brás</h3>
+                <div class="hub-badges">
+                  <span class="badge-line line-vermelha">Linha 3-Vermelha</span>
+                  <span class="badge-line line-coral">Linhas CPTM 7, 10, 11, 12</span>
+                </div>
+              </div>
+              <p class="hub-desc">
+                O maior entroncamento ferroviário da cidade. Milhares de sacoleiros, trabalhadores e trens intermunicipais.
+              </p>
+              <div class="hub-hacks">
+                <div class="hack-item">
+                  <span class="hack-icon">🛍️</span>
+                  <span><strong>Vai fazer compras?</strong> Siga as placas de saída para a Rua Rangel Pestana ou Rua Miller. Cuidado com bolsas nas costas.</span>
+                </div>
+                <div class="hack-item">
+                  <span class="hack-icon">🌊</span>
+                  <span><strong>Siga a correnteza:</strong> No horário de pico, não tente parar no meio da passarela suspensa. Vá no ritmo dos passos.</span>
+                </div>
+                <div class="hack-item">
+                  <span class="hack-icon">🎟️</span>
+                  <span><strong>Dica humana:</strong> A integração entre o Metrô e os trens da CPTM é feita em mezaninos amplos com totens informativos.</span>
+                </div>
+                <button type="button" class="btn-hub-audio" data-hub-audio="bras">
+                  <span>🎧 Ouvir áudio-guia do Brás com Malu</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 7. AS LINHAS: Skiper 90 (Gradient Hover Cards)                    -->
+    <!-- ================================================================= -->
+    <section class="section-container linhas-section" id="linhas">
+      <div class="container">
+        
+        <div class="section-heading text-center">
+          <div class="subheading-tag">🌈 O Mapa das Cores</div>
+          <h2 class="section-title">Cada cor conta uma história de São Paulo</h2>
+          <p class="section-subtitle">
+            Passe o mouse pelos cartões para ver o brilho da cor oficial de cada linha. Clique para ver detalhes e dicas da rota.
+          </p>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="lines-filter-bar">
+          <button class="filter-tab active" data-filter="all">Todas as Linhas</button>
+          <button class="filter-tab" data-filter="metro">Metrô Subterrâneo</button>
+          <button class="filter-tab" data-filter="trem">Trens Metropolitanos (CPTM)</button>
+          <button class="filter-tab" data-filter="monotrilho">Monotrilho Aéreo</button>
+        </div>
+
+        <!-- Skiper 90: Gradient Hover Cards Grid -->
+        <div class="skiper90-grid" id="skiper90Grid">
+          
+          <!-- Linha 1 Azul -->
+          <div class="skiper90-card" data-category="metro" data-line="1" style="--glow-color: #005ca9; --accent-color: #005ca9;">
+            <div class="skiper90-glow"></div>
+            <div class="skiper90-inner">
+              <div class="card-line-top">
+                <span class="line-pill" style="background:#005ca9;">Linha 1</span>
+                <span class="line-company">Metrô SP</span>
+              </div>
+              <h3 class="card-line-name">Azul</h3>
+              <p class="card-line-terminals">Tucuruvi ⇄ Jabaquara</p>
+              <p class="card-line-summary">
+                A primeira do Brasil (inaugurada em 1974). Corta a cidade de Norte a Sul. Liga a <strong>Rodoviária do Tietê</strong>, o centro histórico e a charmosa <strong>Liberdade</strong>.
+              </p>
+              <div class="card-line-stats">
+                <span>23 Estações</span>
+                <span>20,2 km</span>
+                <span>Baldeia em Sé, Luz, Paraíso</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Linha 2 Verde -->
+          <div class="skiper90-card" data-category="metro" data-line="2" style="--glow-color: #00823b; --accent-color: #00823b;">
+            <div class="skiper90-glow"></div>
+            <div class="skiper90-inner">
+              <div class="card-line-top">
+                <span class="line-pill" style="background:#00823b;">Linha 2</span>
+                <span class="line-company">Metrô SP</span>
+              </div>
+              <h3 class="card-line-name">Verde</h3>
+              <p class="card-line-terminals">Vila Madalena ⇄ Vila Prudente</p>
+              <p class="card-line-summary">
+                A famosa <em>Linha da Paulista</em>. Passa sob o coração financeiro, pelo <strong>MASP</strong>, por centros culturais e hospitais de ponta. Super limpa e arborizada.
+              </p>
+              <div class="card-line-stats">
+                <span>14 Estações</span>
+                <span>14,7 km</span>
+                <span>Baldeia em Paulista, Paraíso, Ana Rosa</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Linha 3 Vermelha -->
+          <div class="skiper90-card" data-category="metro" data-line="3" style="--glow-color: #ee3124; --accent-color: #ee3124;">
+            <div class="skiper90-glow"></div>
+            <div class="skiper90-inner">
+              <div class="card-line-top">
+                <span class="line-pill" style="background:#ee3124;">Linha 3</span>
+                <span class="line-company">Metrô SP</span>
+              </div>
+              <h3 class="card-line-name">Vermelha</h3>
+              <p class="card-line-terminals">Palmeiras-Barra Funda ⇄ Corinthians-Itaquera</p>
+              <p class="card-line-summary">
+                A artéria que carrega o coração trabalhador da Zona Leste à Zona Oeste. Passa pela <strong>Sé, Brás, República e Memorial da América Latina</strong>. É a mais movimentada!
+              </p>
+              <div class="card-line-stats">
+                <span>18 Estações</span>
+                <span>22 km</span>
+                <span>Baldeia em Sé, República, Barra Funda</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Linha 4 Amarela -->
+          <div class="skiper90-card" data-category="metro" data-line="4" style="--glow-color: #f5a623; --accent-color: #f5a623;">
+            <div class="skiper90-glow"></div>
+            <div class="skiper90-inner">
+              <div class="card-line-top">
+                <span class="line-pill" style="background:#f5a623; color:#111;">Linha 4</span>
+                <span class="line-company">ViaQuatro</span>
+              </div>
+              <h3 class="card-line-name">Amarela</h3>
+              <p class="card-line-terminals">Luz ⇄ Vila Sônia</p>
+              <p class="card-line-summary">
+                A mais moderna: <strong>trens 100% autônomos sem condutor</strong> e portas de vidro protetoras nas plataformas. Ar condicionado forte e wifi rápido.
+              </p>
+              <div class="card-line-stats">
+                <span>11 Estações</span>
+                <span>12,8 km</span>
+                <span>Baldeia em Luz, República, Paulista, Pinheiros</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Linha 5 Lilás -->
+          <div class="skiper90-card" data-category="metro" data-line="5" style="--glow-color: #9b3894; --accent-color: #9b3894;">
+            <div class="skiper90-glow"></div>
+            <div class="skiper90-inner">
+              <div class="card-line-top">
+                <span class="line-pill" style="background:#9b3894;">Linha 5</span>
+                <span class="line-company">ViaMobilidade</span>
+              </div>
+              <h3 class="card-line-name">Lilás</h3>
+              <p class="card-line-terminals">Capão Redondo ⇄ Chácara Klabin</p>
+              <p class="card-line-summary">
+                A grande linha da Zona Sul. Conecta <strong>Santo Amaro, Brooklin, Moema</strong> e a região de grandes hospitais públicos (AACD, Hospital São Paulo).
+              </p>
+              <div class="card-line-stats">
+                <span>17 Estações</span>
+                <span>20 km</span>
+                <span>Baldeia em Santa Cruz, Chácara Klabin, Santo Amaro</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Linha 7 Rubi -->
+          <div class="skiper90-card" data-category="trem" data-line="7" style="--glow-color: #ca1788; --accent-color: #ca1788;">
+            <div class="skiper90-glow"></div>
+            <div class="skiper90-inner">
+              <div class="card-line-top">
+                <span class="line-pill" style="background:#ca1788;">Linha 7</span>
+                <span class="line-company">CPTM</span>
+              </div>
+              <h3 class="card-line-name">Rubi</h3>
+              <p class="card-line-terminals">Brás ⇄ Jundiaí (Serviço 710)</p>
+              <p class="card-line-summary">
+                A ferrovia clássica da São Paulo Railway. Corta a Serra dos Cristais até o interior em Jundiaí. Hoje opera em conjunto no trajeto contínuo até o ABC Paulista.
+              </p>
+              <div class="card-line-stats">
+                <span>18 Estações</span>
+                <span>60,5 km</span>
+                <span>Baldeia em Luz, Brás, Barra Funda</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Linha 9 Esmeralda -->
+          <div class="skiper90-card" data-category="trem" data-line="9" style="--glow-color: #00a88f; --accent-color: #00a88f;">
+            <div class="skiper90-glow"></div>
+            <div class="skiper90-inner">
+              <div class="card-line-top">
+                <span class="line-pill" style="background:#00a88f;">Linha 9</span>
+                <span class="line-company">ViaMobilidade</span>
+              </div>
+              <h3 class="card-line-name">Esmeralda</h3>
+              <p class="card-line-terminals">Osasco ⇄ Bruno Covas / Mendes-Vila Natal</p>
+              <p class="card-line-summary">
+                Acompanha a Marginal Pinheiros. Ótima para quem vai à <strong>Berrini, Vila Olímpia, Parque Villa-Lobos</strong> e ao autódromo de Interlagos.
+              </p>
+              <div class="card-line-stats">
+                <span>20 Estações</span>
+                <span>35 km</span>
+                <span>Baldeia em Pinheiros, Santo Amaro, Osasco</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Linha 11 Coral -->
+          <div class="skiper90-card" data-category="trem" data-line="11" style="--glow-color: #f04e23; --accent-color: #f04e23;">
+            <div class="skiper90-glow"></div>
+            <div class="skiper90-inner">
+              <div class="card-line-top">
+                <span class="line-pill" style="background:#f04e23;">Linha 11</span>
+                <span class="line-company">CPTM</span>
+              </div>
+              <h3 class="card-line-name">Coral</h3>
+              <p class="card-line-terminals">Luz ⇄ Estudantes (Mogi)</p>
+              <p class="card-line-summary">
+                O famoso <strong>Expresso Leste</strong>. Trens velozes que vão direto da Estação da Luz para Itaquera em apenas 19 minutos, sem parar em todas as estações.
+              </p>
+              <div class="card-line-stats">
+                <span>16 Estações</span>
+                <span>50,5 km</span>
+                <span>Baldeia em Luz, Brás, Tatuapé, Itaquera</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Linha 13 Jade (Aeroporto) -->
+          <div class="skiper90-card" data-category="trem" data-line="13" style="--glow-color: #00a551; --accent-color: #00a551;">
+            <div class="skiper90-glow"></div>
+            <div class="skiper90-inner">
+              <div class="card-line-top">
+                <span class="line-pill" style="background:#00a551;">Linha 13</span>
+                <span class="line-company">CPTM</span>
+              </div>
+              <h3 class="card-line-name">Jade (Aeroporto)</h3>
+              <p class="card-line-terminals">Eng. Goulart / Barra Funda ⇄ Aeroporto-Guarulhos</p>
+              <p class="card-line-summary">
+                A salvação de quem vem de avião! O <strong>Expresso Aeroporto</strong> sai direto da Barra Funda / Luz até o Aeroporto de Guarulhos por apenas R$ 5,00.
+              </p>
+              <div class="card-line-stats">
+                <span>3 Estações + Expresso</span>
+                <span>12,2 km</span>
+                <span>Baldeia em Barra Funda, Luz, Eng. Goulart</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Linha 15 Prata (Monotrilho) -->
+          <div class="skiper90-card" data-category="monotrilho" data-line="15" style="--glow-color: #a4b0be; --accent-color: #a4b0be;">
+            <div class="skiper90-glow"></div>
+            <div class="skiper90-inner">
+              <div class="card-line-top">
+                <span class="line-pill" style="background:#a4b0be; color:#111;">Linha 15</span>
+                <span class="line-company">Metrô SP (Monotrilho)</span>
+              </div>
+              <h3 class="card-line-name">Prata (Monotrilho)</h3>
+              <p class="card-line-terminals">Vila Prudente ⇄ Jardim Colonial</p>
+              <p class="card-line-summary">
+                Trem aéreo sobre pilares de concreto a 15 metros do chão. Uma viagem cinematográfica com vista panorâmica da Zona Leste. Também sem condutor!
+              </p>
+              <div class="card-line-stats">
+                <span>11 Estações</span>
+                <span>14,6 km</span>
+                <span>Baldeia em Vila Prudente (Linha 2-Verde)</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 8. DICAS DE SOBREVIVÊNCIA: Skiper 23 (Minimal Card Expand)        -->
+    <!-- ================================================================= -->
+    <section class="section-container dicas-section" id="dicas">
+      <div class="container">
+        
+        <div class="section-heading text-center">
+          <div class="subheading-tag">💡 Manual de Convivência</div>
+          <h2 class="section-title">O que todo paulistano sabe, mas ninguém te conta</h2>
+          <p class="section-subtitle">
+            Clique em cada cartão para abrir os detalhes, regras de ouro e respostas para as maiores dúvidas.
+          </p>
+        </div>
+
+        <!-- Skiper 23: Minimal Card Expand Grid -->
+        <div class="skiper23-grid" id="skiper23Grid">
+          
+          <!-- Card 1: Como pagar -->
+          <div class="skiper23-card" data-topic="pagamento">
+            <div class="skiper23-header">
+              <div class="skiper23-icon">💳</div>
+              <span class="skiper23-badge">Essencial</span>
+            </div>
+            <h3 class="skiper23-title">Como pagar sua passagem (Sem fila e sem estresse)</h3>
+            <p class="skiper23-preview">
+              Você não precisa comprar bilhete de papel na bilheteria! Pode encostar o cartão de débito/crédito ou celular direto na catraca.
+            </p>
+            <div class="skiper23-action">
+              <span>Ler guia completo</span>
+              <span class="plus-icon">+</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Baldeação -->
+          <div class="skiper23-card" data-topic="baldeacao">
+            <div class="skiper23-header">
+              <div class="skiper23-icon">🔄</div>
+              <span class="skiper23-badge">Economia</span>
+            </div>
+            <h3 class="skiper23-title">O Segredo da Baldeação 100% Gratuita</h3>
+            <p class="skiper23-preview">
+              Como trocar do Metrô para o Trem e vice-versa sem pagar outro centavo. O único erro que você não pode cometer.
+            </p>
+            <div class="skiper23-action">
+              <span>Ler guia completo</span>
+              <span class="plus-icon">+</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Escada Rolante & Regras não-escritas -->
+          <div class="skiper23-card" data-topic="escada">
+            <div class="skiper23-header">
+              <div class="skiper23-icon">🪜</div>
+              <span class="skiper23-badge">Etiqueta Paulistana</span>
+            </div>
+            <h3 class="skiper23-title">A Regra Sagrada da Escada Rolante</h3>
+            <p class="skiper23-preview">
+              O lado esquerdo é LIVRE para quem está com pressa. Fique SEMPRE à direita se for ficar parado. Evite olhares feios!
+            </p>
+            <div class="skiper23-action">
+              <span>Ler guia completo</span>
+              <span class="plus-icon">+</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Horário de Pico -->
+          <div class="skiper23-card" data-topic="pico">
+            <div class="skiper23-header">
+              <div class="skiper23-icon">⏰</div>
+              <span class="skiper23-badge">Sobrevivência</span>
+            </div>
+            <h3 class="skiper23-title">Como sobreviver com calma ao Horário de Pico</h3>
+            <p class="skiper23-preview">
+              Os horários mais cheios (7h-9h e 17h-19h30). O que fazer com a mochila, como respirar e não entrar em pânico na multidão.
+            </p>
+            <div class="skiper23-action">
+              <span>Ler guia completo</span>
+              <span class="plus-icon">+</span>
+            </div>
+          </div>
+
+          <!-- Card 5: Achados e Perdidos -->
+          <div class="skiper23-card" data-topic="perdidos">
+            <div class="skiper23-header">
+              <div class="skiper23-icon">🎒</div>
+              <span class="skiper23-badge">Utilidade</span>
+            </div>
+            <h3 class="skiper23-title">Perdi minha carteira ou mochila: e agora?</h3>
+            <p class="skiper23-preview">
+              A Central de Achados e Perdidos do Metrô na Sé é um milagre: mais de 70% dos pertences voltam para os donos. Veja o passo a passo.
+            </p>
+            <div class="skiper23-action">
+              <span>Ler guia completo</span>
+              <span class="plus-icon">+</span>
+            </div>
+          </div>
+
+          <!-- Card 6: Acessibilidade & Carrinhos -->
+          <div class="skiper23-card" data-topic="acessibilidade">
+            <div class="skiper23-header">
+              <div class="skiper23-icon">♿</div>
+              <span class="skiper23-badge">Inclusão</span>
+            </div>
+            <h3 class="skiper23-title">Acessibilidade, Idosos e Carrinho de Bebê</h3>
+            <p class="skiper23-preview">
+              Todas as estações têm elevadores e suporte dedicado. Você tem prioridade total e não precisa enfrentar as escadas rolantes íngremes.
+            </p>
+            <div class="skiper23-action">
+              <span>Ler guia completo</span>
+              <span class="plus-icon">+</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Minimal Card Expand Modal (Skiper 23 Overlay) -->
+    <div id="skiper23Modal" class="skiper23-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="skiper23-modal-box">
+        <button id="closeModalBtn" class="modal-close-btn" type="button" aria-label="Fechar guia">&times;</button>
+        <div id="modalContentTarget" class="modal-dynamic-content">
+          <!-- Dynamic expanded content injected here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- 9. VOZES DOS TRILHOS: Skiper 6 (Hover Members)                    -->
+    <!-- ================================================================= -->
+    <section class="section-container vozes-section" id="vozes">
+      <div class="container">
+        
+        <div class="section-heading text-center">
+          <div class="subheading-tag">👥 O Coração Humano</div>
+          <h2 class="section-title">Vozes dos Trilhos: Quem vive a cidade com você</h2>
+          <p class="section-subtitle">
+            Passe o mouse sobre os nomes para conhecer as histórias reais de funcionários e passageiros que fazem de São Paulo uma cidade calorosa.
+          </p>
+        </div>
+
+        <!-- Skiper 6: Hover Members Component -->
+        <div class="skiper6-container">
+          <div class="skiper6-list" id="skiper6List">
+            
+            <div class="skiper6-item active" data-member="cadu">
+              <div class="member-info">
+                <span class="member-role">Agente de Estação (Sé) • 12 anos de casa</span>
+                <h3 class="member-name">Carlos "Cadú" Mendes</h3>
+              </div>
+              <div class="member-arrow">→</div>
+            </div>
+
+            <div class="skiper6-item" data-member="dora">
+              <div class="member-info">
+                <span class="member-role">Passageira Diária (Linha 3) • Veio da Bahia</span>
+                <h3 class="member-name">Dona Dora Auxiliadora</h3>
+              </div>
+              <div class="member-arrow">→</div>
+            </div>
+
+            <div class="skiper6-item" data-member="ju">
+              <div class="member-info">
+                <span class="member-role">Mãe & Usuária Acessível • Linha 4</span>
+                <h3 class="member-name">Juliana & Gael (no carrinho)</h3>
+              </div>
+              <div class="member-arrow">→</div>
+            </div>
+
+            <div class="skiper6-item" data-member="benedito">
+              <div class="member-info">
+                <span class="member-role">Violinista da Estação da Luz • 8 anos tocando</span>
+                <h3 class="member-name">Seu Benedito Santos</h3>
+              </div>
+              <div class="member-arrow">→</div>
+            </div>
+
+            <div class="skiper6-item" data-member="camila">
+              <div class="member-info">
+                <span class="member-role">Médica Residente no HC • Linha 2-Verde</span>
+                <h3 class="member-name">Dra. Camila Nogueira</h3>
+              </div>
+              <div class="member-arrow">→</div>
+            </div>
+
+          </div>
+
+          <!-- Dynamic Member Preview Panel -->
+          <div class="skiper6-preview-panel" id="skiper6Preview">
+            <div class="preview-card">
+              <div class="preview-image-wrap">
+                <img id="memberPhoto" src="assets/images/agente_ajuda.jpg" alt="Retrato do membro dos trilhos" class="member-photo">
+                <div class="member-quote-tag" id="memberTag">Agente de Atendimento</div>
+              </div>
+              <div class="preview-quote-box">
+                <blockquote id="memberQuote" class="member-quote">
+                  "A gente com colete amarelo não tá aqui só para vigiar catraca. O meu maior orgulho é olhar nos olhos de alguém que tá assustado e falar: 'Calma, pega aquele trem ali que você chega certinho'. Pode me chamar sempre!"
+                </blockquote>
+                <div class="member-tip-box">
+                  <span class="tip-badge">Dica do Cadú:</span>
+                  <p id="memberTip" class="member-tip-text">
+                    "Na Estação Sé, nunca tente entrar no vagão de frente empurrando. Dê 3 passos para o lado e espere o desembarque. Você entra com o dobro de espaço."
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 10. DICIONÁRIO PAULISTANO DOS TRILHOS (Glossário Amigo)           -->
+    <!-- ================================================================= -->
+    <section class="section-container dicionario-section" id="dicionario">
+      <div class="container">
+        
+        <div class="section-heading text-center">
+          <div class="subheading-tag">📖 Dicionário Paulistano</div>
+          <h2 class="section-title">O que essas palavras estranhas significam?</h2>
+          <p class="section-subtitle">
+            Ouviu um termo no alto-falante e não entendeu nada? Aqui está a tradução para o bom português!
+          </p>
+        </div>
+
+        <div class="dict-grid">
+          <div class="dict-card">
+            <span class="dict-term">Baldeação</span>
+            <span class="dict-phonetic">/bal-de-a-ção/</span>
+            <p class="dict-meaning">
+              Trocar de um trem/metrô para outro sem sair da estação e <strong>sem pagar outra passagem</strong>. É só seguir as placas coloridas pelos túneis internos.
+            </p>
+          </div>
+
+          <div class="dict-card">
+            <span class="dict-term">Sentido</span>
+            <span class="dict-phonetic">/sen-ti-do/</span>
+            <p class="dict-meaning">
+              A direção para onde o trem está indo. Em SP, o "sentido" sempre leva o <strong>nome da última estação daquela linha</strong> (ex: "Sentido Jabaquara").
+            </p>
+          </div>
+
+          <div class="dict-card">
+            <span class="dict-term">Horário de Pico</span>
+            <span class="dict-phonetic">/ho-rá-rio de pi-co/</span>
+            <p class="dict-meaning">
+              As horas em que a cidade inteira se move junta: de manhã (07h às 09h) e no fim da tarde (17h às 19h30). As estações ficam lotadas, mas os trens passam a cada 90 segundos.
+            </p>
+          </div>
+
+          <div class="dict-card">
+            <span class="dict-term">Plataforma Central</span>
+            <span class="dict-phonetic">/pla-ta-for-ma cen-tral/</span>
+            <p class="dict-meaning">
+              Plataforma que fica no meio dos trilhos. Em estações como a Sé, é onde você <strong>desembarca</strong>, enquanto as plataformas laterais são para quem vai subir no trem.
+            </p>
+          </div>
+
+          <div class="dict-card">
+            <span class="dict-term">Catraca</span>
+            <span class="dict-phonetic">/ca-tra-ca/</span>
+            <p class="dict-meaning">
+              O bloqueio de acesso onde você encosta seu cartão de débito/crédito, bilhete digital QR Code ou cartão TOP. Passou ali, você está dentro do sistema.
+            </p>
+          </div>
+
+          <div class="dict-card">
+            <span class="dict-term">Expresso</span>
+            <span class="dict-phonetic">/ex-pres-so/</span>
+            <p class="dict-meaning">
+              Trens especiais (como o Expresso Leste da Linha 11 ou Expresso Aeroporto da Linha 13) que pulam pequenas paradas para te levar muito mais rápido ao destino final.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 11. ANÚNCIO SONORO INTERATIVO (Experiência Imersiva)             -->
+    <!-- ================================================================= -->
+    <section class="section-container chime-interactive-section">
+      <div class="container">
+        <div class="chime-experience-box">
+          <div class="chime-info">
+            <div class="chime-badge">Aúdio Original SP</div>
+            <h3 class="chime-title">Reconhece o som mais famoso de São Paulo?</h3>
+            <p class="chime-desc">
+              O anúncio sonoro das estações virou patrimônio afetivo da cidade. Clique para tocar o famoso toque musical e o aviso sonoro do trem.
+            </p>
+          </div>
+          <div class="chime-controls">
+            <button id="playChimeStationBtn" class="btn btn-chime-play" type="button">
+              <span class="play-icon">▶</span>
+              <span>Tocar Anúncio de Estação</span>
+            </button>
+            <div class="audio-wave-visualizer" id="waveVisualizer">
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================================================================= -->
+  <!-- 12. RODAPÉ ACOLHEDOR & TELEFONES ÚTEIS                            -->
+  <!-- ================================================================= -->
+  <footer class="main-footer">
+    <div class="container footer-content">
+      
+      <div class="footer-col brand-col">
+        <div class="brand-logo footer-logo">
+          <span class="brand-name">Trilhos<span class="brand-accent">SP</span></span>
+        </div>
+        <p class="footer-quote">
+          "São Paulo é grande demais para se viver sozinho. A gente se ajuda em cada estação, em cada escada rolante e em cada vagão."
+        </p>
+        <p class="footer-sub">
+          Projeto voluntário e informativo com carinho para todos os cidadãos, viajantes e novos paulistanos.
+        </p>
+      </div>
+
+      <div class="footer-col help-col">
+        <h4 class="footer-heading">Telefones que Salvam</h4>
+        <ul class="help-list">
+          <li>
+            <strong>Metrô de São Paulo (Central):</strong>
+            <a href="tel:08007707722">0800 770 7722</a> (Gratuito, 24h)
+          </li>
+          <li>
+            <strong>WhatsApp CPTM (Trens):</strong>
+            <a href="https://wa.me/5511997677080" target="_blank" rel="noopener">(11) 99767-7080</a>
+          </li>
+          <li>
+            <strong>SMS Denúncia / Ajuda Imediata:</strong>
+            <span>Envie SMS para <strong>(11) 97333-2252</strong> (Metrô)</span>
+          </li>
+          <li>
+            <strong>Polícia Militar (Emergência):</strong>
+            <a href="tel:190">190</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer-col links-col">
+        <h4 class="footer-heading">Links Oficiais</h4>
+        <ul class="footer-links-list">
+          <li><a href="https://www.metro.sp.gov.br" target="_blank" rel="noopener">Metrô Companhia do Metropolitano</a></li>
+          <li><a href="https://www.cptm.sp.gov.br" target="_blank" rel="noopener">CPTM Trens Metropolitanos</a></li>
+          <li><a href="https://www.viaquatro.com.br" target="_blank" rel="noopener">ViaQuatro (Linha Amarela)</a></li>
+          <li><a href="https://www.viamobilidade.com.br" target="_blank" rel="noopener">ViaMobilidade (Linhas 5, 8, 9)</a></li>
+          <li><a href="https://boradetop.com.br" target="_blank" rel="noopener">Cartão TOP / Bilhete Digital QR Code</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p>© 2026 Trilhos SP — Guia Humano e Acolhedor. Desenvolvido para facilitar a vida de quem vive e visita São Paulo.</p>
+        <div class="footer-heart">Feito com ☕ e carinho por paulistanos.</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================================================================= -->
+  <!-- 13. ASSISTENTE DE IA: "MALU DOS TRILHOS" (Acolhedora & Humanizada) -->
+  <!-- ================================================================= -->
+  <div class="ai-widget-wrapper" id="aiWidgetWrapper">
+    
+    <!-- Proactive Toast Notification Bubble -->
+    <div class="ai-speech-bubble" id="aiSpeechBubble">
+      <div class="speech-bubble-inner">
+        <span class="bubble-sparkle">✨</span>
+        <div class="bubble-text">
+          <strong>Tá perdido ou com dúvida?</strong>
+          <p>Oi! Sou a <strong>Malu</strong>, sua assistente de IA. Clica aqui que te explico qual trem pegar!</p>
+        </div>
+        <button class="bubble-close-btn" id="closeBubbleBtn" aria-label="Fechar aviso">&times;</button>
+      </div>
+    </div>
+
+    <!-- Floating Trigger Button -->
+    <button class="ai-fab-btn" id="aiFabBtn" type="button" aria-label="Abrir assistente de IA Malu">
+      <div class="ai-avatar-ring">
+        <img src="assets/images/agente_ajuda.jpg" alt="Malu - Assistente de IA dos Trilhos" class="ai-fab-avatar">
+        <span class="ai-status-pulse"></span>
+      </div>
+      <div class="ai-fab-label">
+        <span class="ai-name">Malu IA</span>
+        <span class="ai-hint">Ajuda ao vivo</span>
+      </div>
+    </button>
+
+    <!-- Chat Window Container (Glassmorphic) -->
+    <div class="ai-chat-window" id="aiChatWindow" aria-hidden="true" role="dialog" aria-label="Chat com Assistente Malu">
+      
+      <!-- Chat Header -->
+      <div class="ai-chat-header">
+        <div class="ai-header-profile">
+          <div class="ai-header-avatar-wrap">
+            <img src="assets/images/agente_ajuda.jpg" alt="Malu IA" class="ai-header-avatar">
+            <span class="online-indicator"></span>
+          </div>
+          <div class="ai-header-meta">
+            <div class="ai-header-name-row">
+              <h3 class="ai-header-name">Malu dos Trilhos</h3>
+              <span class="ai-header-badge">IA Humanizada</span>
+            </div>
+            <span class="ai-header-status">Pronta para te orientar em SP • 24h</span>
+          </div>
+        </div>
+        <div class="ai-header-actions">
+          <button id="chatCallBtn" class="ai-ctrl-btn ai-call-trigger-btn" type="button" title="Ligar para a Malu por voz (Chamada em tempo real)" aria-label="Iniciar chamada com Malu">
+            📞
+          </button>
+          <button id="toggleTtsBtn" class="ai-ctrl-btn" type="button" title="Ativar/Desativar voz falada da Malu" aria-label="Alternar voz da assistente">
+            <span id="ttsIcon">🔊</span>
+          </button>
+          <button id="clearChatBtn" class="ai-ctrl-btn" type="button" title="Limpar conversa" aria-label="Limpar histórico">
+            🗑️
+          </button>
+          <button id="minimizeChatBtn" class="ai-ctrl-btn close-x" type="button" title="Minimizar chat" aria-label="Fechar chat">
+            &times;
+          </button>
+        </div>
+      </div>
+
+      <!-- Real-Time Speech Status Bar -->
+      <div class="ai-speech-status-bar" id="aiSpeechStatusBar" style="display:none;">
+        <div class="speech-waves"><span></span><span></span><span></span><span></span></div>
+        <span class="speech-status-label" id="speechStatusLabel">Malu está falando...</span>
+        <button type="button" id="stopSpeechBtn" class="stop-speech-mini-btn" title="Pausar voz da Malu">
+          Parar áudio ⏹
+        </button>
+      </div>
+
+      <!-- Quick Chips Bar -->
+      <div class="ai-chips-bar" id="aiChipsBar">
+        <span class="chips-hint">Dúvidas rápidas:</span>
+        <button class="ai-chip-btn" data-query="Tô perdido na Sé agora, o que eu faço?">🚨 Perdido na Sé</button>
+        <button class="ai-chip-btn" data-query="Como ir pro Aeroporto de Guarulhos por R$ 5?">✈️ Aeroporto por R$ 5</button>
+        <button class="ai-chip-btn" data-query="Preciso pagar de novo pra trocar de trem?">🔄 Baldeação é de graça?</button>
+        <button class="ai-chip-btn" data-query="Posso pagar direto com cartão de aproximação na catraca?">💳 Pagar por aproximação</button>
+        <button class="ai-chip-btn" data-query="Qual estação desço pra ir na 25 de Março?">🛍️ Ir na 25 de Março</button>
+        <button class="ai-chip-btn" data-query="Como ir pro MASP na Avenida Paulista?">🎨 Ir pro MASP Paulista</button>
+        <button class="ai-chip-btn" data-query="Esqueci minha bolsa no vagão, como recuperar?">🎒 Esqueci um objeto</button>
+        <button class="ai-chip-btn" data-query="Qual lado da escada rolante eu devo ficar?">🪜 Regra da escada rolante</button>
+      </div>
+
+      <!-- Messages Feed -->
+      <div class="ai-messages-feed" id="aiMessagesFeed">
+        <!-- Initial Welcoming Message -->
+        <div class="ai-msg ai-msg-bot">
+          <div class="msg-avatar-thumb">
+            <img src="assets/images/agente_ajuda.jpg" alt="Malu">
+          </div>
+          <div class="msg-bubble">
+            <p>Oi, tudo bem? Respira fundo, não precisa ter pressa! ☕❤️</p>
+            <p>Eu sou a <strong>Malu</strong>, sua parceira de inteligência artificial nos trilhos de São Paulo. Se você estiver perdido em alguma plataforma, com medo da multidão ou em dúvida de qual trem pegar, me pergunta aqui!</p>
+            <div class="msg-audio-play-row">
+              <button type="button" class="btn-msg-audio-play" data-text="Oi, tudo bem? Respira fundo, não precisa ter pressa! Eu sou a Malu, sua parceira de inteligência artificial nos trilhos de São Paulo. Se você estiver perdido em alguma plataforma ou em dúvida de qual trem pegar, me pergunta aqui!">
+                <span class="audio-play-icon">▶</span>
+                <span>Ouvir com a voz da Malu</span>
+              </button>
+            </div>
+            <span class="msg-time">Agora mesmo</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Typing Indicator -->
+      <div class="ai-typing-indicator" id="aiTypingIndicator" style="display:none;">
+        <div class="typing-bubble">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+        </div>
+        <span class="typing-text">Malu está pensando na melhor rota...</span>
+      </div>
+
+      <!-- Chat Input Form -->
+      <form class="ai-input-form" id="aiInputForm">
+        <div class="input-field-wrap">
+          <input 
+            type="text" 
+            id="aiUserInput" 
+            class="ai-user-input" 
+            placeholder="Ex: 'Tô na Luz e quero ir pro MASP', 'Como pagar com celular?'..." 
+            autocomplete="off"
+            aria-label="Mensagem para Malu"
+          >
+          <button type="button" id="aiMicBtn" class="ai-mic-btn" title="Falar por voz" aria-label="Usar microfone">
+            🎤
+          </button>
+        </div>
+        <button type="submit" id="aiSendBtn" class="ai-send-btn" aria-label="Enviar mensagem">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </form>
+
+      <!-- Chat Footer Note -->
+      <div class="ai-chat-disclaimer">
+        <span>Respostas carinhosas e instantâneas • Em emergências na estação, ligue 0800 770 7722</span>
+      </div>
+
+    </div>
+
+    <!-- =============================================================== -->
+    <!-- MODAL DE CHAMADA DE VOZ AO VIVO COM MALU (Full Voice Call UI)   -->
+    <!-- =============================================================== -->
+    <div class="ai-call-overlay" id="aiCallOverlay" aria-hidden="true" role="dialog" aria-label="Chamada de Voz com Malu">
+      <div class="ai-call-box">
+        
+        <div class="call-top-bar">
+          <div class="call-badge-live">
+            <span class="call-live-dot"></span>
+            <span>Chamada de Voz com a Malu</span>
+          </div>
+          <span class="call-timer" id="callTimer">00:00</span>
+        </div>
+
+        <div class="call-avatar-stage">
+          <div class="call-ripple-ring ring-1"></div>
+          <div class="call-ripple-ring ring-2"></div>
+          <div class="call-ripple-ring ring-3"></div>
+          <div class="call-avatar-wrap">
+            <img src="assets/images/agente_ajuda.jpg" alt="Malu" class="call-avatar-img">
+          </div>
+        </div>
+
+        <div class="call-info">
+          <h3 class="call-assistant-name">Malu dos Trilhos</h3>
+          <span class="call-status-label" id="callStatusLabel">Conectando...</span>
+        </div>
+
+        <!-- Live Subtitles & Captions -->
+        <div class="call-transcript-panel" id="callTranscriptPanel">
+          <p class="call-sub-text" id="callSubText">
+            "Alô? Oi! Aqui é a Malu. Respira fundo, eu tô te ouvindo! Onde você tá ou pra onde você quer ir?"
+          </p>
+        </div>
+
+        <!-- Voice Soundwave Visualizer -->
+        <div class="call-visualizer" id="callVisualizer">
+          <span class="v-bar"></span>
+          <span class="v-bar"></span>
+          <span class="v-bar"></span>
+          <span class="v-bar"></span>
+          <span class="v-bar"></span>
+          <span class="v-bar"></span>
+          <span class="v-bar"></span>
+          <span class="v-bar"></span>
+          <span class="v-bar"></span>
+          <span class="v-bar"></span>
+        </div>
+
+        <!-- Call Action Controls -->
+        <div class="call-controls">
+          <button id="callMicToggleBtn" class="call-btn-circle mic-btn active" type="button" title="Ligar/Desligar Microfone">
+            <span id="callMicIcon">🎤</span>
+            <span class="btn-micro-label" id="callMicLabel">Ouvindo</span>
+          </button>
+
+          <button id="callEndBtn" class="call-btn-circle end-call-btn" type="button" title="Encerrar Chamada">
+            <span>📞</span>
+            <span class="btn-micro-label">Desligar</span>
+          </button>
+
+          <button id="callSwitchChatBtn" class="call-btn-circle chat-switch-btn" type="button" title="Ir para o Chat de Texto">
+            <span>💬</span>
+            <span class="btn-micro-label">Texto</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
